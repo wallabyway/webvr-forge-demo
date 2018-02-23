@@ -9,8 +9,9 @@
 		<link rel="shortcut icon" href="#" />
 
 	    <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css?v=v3.3" type="text/css">
-	    <link rel="stylesheet" href="ext/webVR.css" type="text/css">
 	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js?v=v3.3"></script>
+
+	    <script> avp.ENABLE_DEBUG=true; </script>
 	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.js?v=v3.3"></script>
 	    <script src="./ext/WebVR.js"></script>
 	    <style> h2 {font-family:arial; position:absolute; margin:20px; color:darkblue; z-index:1;}</style>
@@ -25,6 +26,7 @@
 	var options = {
 	  env: "Local",
 	  useADP: false,
+	  useConsolidation: true,
 	  urn: window.location.search.split("=")[1]
 	}
     function initializeViewer() {
@@ -35,6 +37,8 @@
 		});
 		function onSuccess() {
 		  viewer.loadExtension('Autodesk.Viewing.WebVR');
+		  viewer.impl.setFPSTargets(48,60,120);
+		  viewer.impl.toggleProgressive(true);
 		}
 	}
 

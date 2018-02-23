@@ -19,7 +19,7 @@ Autodesk.Viewing.Extensions.WebVR.StereoRenderContext = function(_vrDisplay, cam
 
     var _standing = false;
     var _userHeight = 0.5;
-    var _scale = 10.0 * _vrDisplay.modelScaleFactor; // scale factor 10.0 of a 'toy house'.  Make a UI for this.
+    var _scale = 1.0 * _vrDisplay.modelScaleFactor; // scale factor 10.0 of a 'toy house'.  Make a UI for this.
 
     var frameData = null;
 
@@ -27,7 +27,7 @@ Autodesk.Viewing.Extensions.WebVR.StereoRenderContext = function(_vrDisplay, cam
         _context = new avp.RenderContext();
         _renderer = renderer;
 
-        var dpr = window.devicePixelRatio * 1.5;
+        var dpr = 1;//window.devicePixelRatio;
         _w = _vrDisplay.getEyeParameters("left").renderWidth * 2 / dpr;
         _h = _vrDisplay.getEyeParameters("right").renderHeight / dpr;
 
@@ -416,9 +416,9 @@ Autodesk.Viewing.Extensions.WebVR.VRTool = function(viewer, vrExtension, _vrDisp
     var _camera = _navapi.getCamera();
     var _stereoRenderContext, _HUD;
     var toolConfig = {
-        webVR_cursor : avp.isExperimentalFlagEnabled('webVR_cursor', vrExtension.options),
-        webVR_menu : avp.isExperimentalFlagEnabled('webVR_menu', vrExtension.options),
-        webVR_orbitModel : avp.isExperimentalFlagEnabled('webVR_orbitModel', vrExtension.options)
+        webVR_cursor : false,
+        webVR_menu : false,
+        webVR_orbitModel : false
     };
 
     // VR state
@@ -442,7 +442,7 @@ Autodesk.Viewing.Extensions.WebVR.VRTool = function(viewer, vrExtension, _vrDisp
         _navapi.setPivotPoint(_vrDisplay.target, true, true);
         _navapi.setView(_camera.position, _vrDisplay.target);
         _navapi.setCameraUpVector(new THREE.Vector3(0, 1, 0));
-        _vrDisplay.modelScaleFactor = Math.max(Math.min(Math.min(boundsSize.x, boundsSize.y), boundsSize.z) / 10.0, 0.0001);
+        _vrDisplay.modelScaleFactor = 1.0;//Math.max(Math.min(Math.min(boundsSize.x, boundsSize.y), boundsSize.z) / 1.0, 0.0001);
 
         // Request webVR full screen
         _vrDisplay._isPresenting = av.isMobileDevice();
@@ -673,7 +673,7 @@ Autodesk.Viewing.Extensions.WebVR.Cursor = function(viewerImpl, autocam, _scale,
     var _cursor;
     var hit;
 
-    var USE_ANGLECURSOR = true;
+    var USE_ANGLECURSOR = false;
 
     this.init = function(scene) {
         // Create Cursor
@@ -703,6 +703,7 @@ Autodesk.Viewing.Extensions.WebVR.Cursor = function(viewerImpl, autocam, _scale,
         } else {
             _cursor.children[0].material.color.setHex(DEFAULT_RED);
             dist = (camera.far - camera.near) * 0.5;
+            return;
         }
 
         var matrix = new THREE.Matrix4();
@@ -719,10 +720,10 @@ Autodesk.Viewing.Extensions.WebVR.Cursor = function(viewerImpl, autocam, _scale,
         // orientate the cursor angle with the terrain and position it's distance
         // this technique reduces cursor jitter
         if (USE_ANGLECURSOR) {
-    //        _cursor.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), hit.face.normal.clone().normalize());
-    //        _cursor.quaternion.multiply(camera.quaternion);
-    //        _cursor.quaternion.inverse();
-            //_cursor.quaternion.y = 0;
+            _cursor.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), hit.face.normal.clone().normalize());
+            _cursor.quaternion.multiply(camera.quaternion);
+            _cursor.quaternion.inverse();
+            _cursor.quaternion.y = 0;
         }
 
         // if (Math.round(hit.face.normal.x*10)/10 == -0.7) {}
