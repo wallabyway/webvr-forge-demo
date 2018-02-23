@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<title>webVR player</title>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<link rel="shortcut icon" href="#" />
+
+	    <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css?v=v3.3" type="text/css">
+	    <link rel="stylesheet" href="ext/webVR.css" type="text/css">
+	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js?v=v3.3"></script>
+	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.js?v=v3.3"></script>
+	    <script src="./ext/WebVR.js"></script>
+	    <style> h2 {font-family:arial; position:absolute; margin:20px; color:darkblue; z-index:1;}</style>
+
+	</head>
+    <body onload="initializeViewer();" style="margin:0">
+	    <div id="forgeViewer" ></div>
+	    <h2> My Tutorial </h2>
+	</body>
+
+	<script>
+	var options = {
+	  env: "Local",
+	  useADP: false,
+	  urn: window.location.search.split("=")[1]
+	}
+    function initializeViewer() {
+
+		viewer = new Autodesk.Viewing.Private.GuiViewer3D(document.getElementById('forgeViewer'), {});
+		Autodesk.Viewing.Initializer( options, function() {
+		  viewer.start(options.urn, options, onSuccess);            
+		});
+		function onSuccess() {
+		  viewer.loadExtension('Autodesk.Viewing.WebVR');
+		}
+	}
+
+/*
+		var viewerApp;
+
+	    function initializeViewer() {
+
+			function onLoadSuccess() {
+			  var viewables = viewerApp.bubble.search({ 'type': 'geometry' });
+			  if (viewables.length > 0)
+			  	viewerApp.selectItem(viewables[0].data);
+			};
+
+			function onInitialized() {
+				viewerApp = new Autodesk.Viewing.ViewingApplication('forgeViewer');
+				viewerApp.registerViewer( viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D );	
+				viewerApp.loadDocument( options.urn, onLoadSuccess);
+			};
+
+			Autodesk.Viewing.Initializer( options, onInitialized);
+		}
+*/    
+	</script>
+</html>
