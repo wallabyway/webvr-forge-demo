@@ -46,8 +46,8 @@
 	                        // faux movement test
 	                        //window.setTimeout(()=> 
 	                        	window.addEventListener('mousemove', (e) => {
-		                        	window.obj.position.x=e.x/10.0;
-		                        	window.obj.position.z=e.y/10.0;
+		                        	window.obj.position.x=-e.x/10.0;
+		                        	window.obj.position.y=-e.y/10.0;
 		                        	viewer.impl.invalidate(true);
 		                        });
 		                    //,3000);
