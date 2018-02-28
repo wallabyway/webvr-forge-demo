@@ -67,7 +67,7 @@
 	                        scene.add( pointLight );
 
 	                        // faux movement test
-	                        addEventListener('mousemove', (e) => {
+	                        window.addEventListener('mousemove', (e) => {
 	                        	window.obj.position.x=e.x/10;
 	                        	window.obj.position.z=e.y/10;
 	                        	viewer.impl.invalidate(true)
