@@ -69,13 +69,13 @@
 	                        scene.add( pointLight );
 
 	                        // faux movement test
-	                        //window.setTimeout(()=> 
+	                        window.setTimeout(()=> 
 	                        	window.addEventListener('mousemove', (e) => {
 		                        	window.obj.position.x=e.x/10;
 		                        	window.obj.position.z=e.y/10;
 		                        	viewer.impl.invalidate(true)
 		                        });
-		                        //,5000);
+		                    ,10000);
 
 	                    }).catch((...params) =>{
 	                        console.error('could not load obj file', ...params)
