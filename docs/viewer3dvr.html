@@ -10,10 +10,10 @@
 
 	    <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css?v=v3.3" type="text/css">
 	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js?v=v3.3"></script>
-
-	    <script> avp.ENABLE_DEBUG=true; </script>
 	    <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.js?v=v3.3"></script>
 	    <script src="./ext/WebVR.js"></script>
+		<script src="./ext/OBJLoader.js"></script>
+		<script src="./ext/MTLLoader.js"></script>
 	    <style> h2 {font-family:arial; position:absolute; margin:20px; color:darkblue; z-index:1;}</style>
 
 	</head>
@@ -36,7 +36,7 @@
 	        mtlLoader.setPath(baseURL)
 	        const mtlName = geometry.split('.')[geometry.split(':').length - 1] + '.mtl'
 	        mtlLoader.load(mtlName, (materials) => {
-	            materials.preload()
+	            materials.preload();
 	            let objLoader = new THREE.OBJLoader()
 	            objLoader.setMaterials(materials)
 	            objLoader.setPath(baseURL)
@@ -50,6 +50,7 @@
 	    })
 	}
 	window.obj = {};
+	var viewer = {};
 
 
 	function loadControllers(scene) {
@@ -59,6 +60,7 @@
 	                        object.position.set(0, 0, -5);
 	                        //object.rotation.x = -Math.PI/2
 	                        scene.add(object);
+	                        window.obj = object;
 
 	                        // Add some lights to the scene
 	                        scene.add(new THREE.AmbientLight('#777', 0.2));
@@ -67,13 +69,14 @@
 	                        scene.add( pointLight );
 
 	                        // faux movement test
-	                        window.addEventListener('mousemove', (e) => {
-	                        	window.obj.position.x=e.x/10;
-	                        	window.obj.position.z=e.y/10;
-	                        	viewer.impl.invalidate(true)
-	                        })
+	                        //window.setTimeout(()=> 
+	                        	window.addEventListener('mousemove', (e) => {
+		                        	window.obj.position.x=e.x/10;
+		                        	window.obj.position.z=e.y/10;
+		                        	viewer.impl.invalidate(true)
+		                        });
+		                        //,5000);
 
-	                        window.obj = object;
 	                    }).catch((...params) =>{
 	                        console.error('could not load obj file', ...params)
 	                    })
@@ -83,13 +86,14 @@
 
 
     function initializeViewer() {
+	    window.devicePixelRatio=1.25;
 
 		viewer = new Autodesk.Viewing.Private.GuiViewer3D(document.getElementById('forgeViewer'), {});
 		Autodesk.Viewing.Initializer( options, function() {
 		  viewer.start(options.urn, options, onSuccess);            
 		});
 		function onSuccess() {
-		  viewer.loadExtension('Autodesk.Viewing.WebVR');
+		  //viewer.loadExtension('Autodesk.Viewing.WebVR');
 		  viewer.impl.setFPSTargets(48,60,120);
 		  viewer.impl.toggleProgressive(true);	
 		  loadControllers(viewer.impl.sceneAfter);	  
