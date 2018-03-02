@@ -24,37 +24,73 @@
 	        })
 	    })
 	}
-	window.obj = {};
+	window.ring = {};
+	window.rift = {};
 	var viewer = {};
+	var ax = -50, ay = 50, az = 50;
+
+	function rayhit_highlight(rift, cursor) {
+		if (!rift.position) return;
+		var pos = new THREE.Vector3(rift.position.x, rift.position.y, 10);
+		var ray = new THREE.Ray(pos,new THREE.Vector3(0,0,1));
+		var nodes = viewer.impl.rayIntersect(ray,true);
+		if (nodes && nodes.dbId)
+			viewer.select(nodes.dbId);
+		if (nodes && nodes.dbId) {
+			console.log(nodes);
+			cursor.position.set(nodes.intersectPoint.x, nodes.intersectPoint.y, nodes.intersectPoint.z);
+		}
+	}
+
+	function loadVRCursors(scene) {
+        // Add some lights to the scene
+        scene.add(new THREE.AmbientLight('#777', 0.2));
+        var pointLight = new THREE.PointLight( 0xffffff, 0.8 );
+        pointLight.position.set(10, 10, 10);
+        scene.add( pointLight );
+
+        // Add the rift hand controller OBJ
+        loadObj('','cursor.obj').then(ring => {
+        	// Add Rift hand controller
+            ring.scale.set(.05, .05, .05);
+            ring.position.set(0, 0, -5);
+            ring.rotation.x = -Math.PI/2+0.2
+            scene.add(ring);
+            window.ring = ring;
+        });
 
 
-	function loadControllers(scene) {
-	                    // Add the obj
-	                    loadObj('','rift.obj').then(object => {
-	                        object.scale.set(.1, .1, .1);
-	                        object.position.set(0, 0, -5);
-	                        //object.rotation.x = -Math.PI/2
-	                        scene.add(object);
-	                        window.obj = object;
+        // Add the rift hand controller OBJ
+        loadObj('','rift.obj').then(rift => {
 
-	                        // Add some lights to the scene
-	                        scene.add(new THREE.AmbientLight('#777', 0.2));
-	                        var pointLight = new THREE.PointLight( 0xffffff, 0.8 );
-	                        pointLight.position.set(10, 10, 10);
-	                        scene.add( pointLight );
+        	// Add Rift hand controller
+            rift.scale.set(.1, .1, .1);
+            rift.position.set(0, 0, -5);
+            rift.rotation.x = -Math.PI/2
+            scene.add(rift);
 
-	                        // faux movement test
-	                        //window.setTimeout(()=> 
-	                        	window.addEventListener('mousemove', (e) => {
-		                        	window.obj.position.x=-e.x/10.0;
-		                        	window.obj.position.y=-e.y/10.0;
-		                        	viewer.impl.invalidate(true);
-		                        });
-		                    //,3000);
+        	// Add laser pointer
+			var linemat = new THREE.LineBasicMaterial( { color: 0xff00ff } );
+			var linegeom = new THREE.Geometry();
+			linegeom.vertices.push(new THREE.Vector3( 0, 0, 0) );
+			linegeom.vertices.push(new THREE.Vector3( 0, 1000, 0) );
+			var line = new THREE.Line( linegeom, linemat );
+			rift.add(line);
 
-	                    }).catch((...params) =>{
-	                        console.error('could not load obj file', ...params)
-	                    })
+            // faux movement test
+        	window.addEventListener('mousemove', (e) => {
+            	window.rift.position.x=ax+e.x/10.0;
+            	window.rift.position.y=ay-e.y/10.0;
+            	window.rift.position.z=az;
+            	rayhit_highlight(window.rift, window.ring);
+            	viewer.impl.invalidate(true);
+            });
+            // for debugging only
+            window.rift = rift;
+
+        }).catch((...params) =>{
+            console.error('could not load obj file', ...params)
+        })
 
 	}
 
@@ -71,6 +107,12 @@
 		  //viewer.loadExtension('Autodesk.Viewing.WebVR');
 		  viewer.impl.setFPSTargets(48,60,120);
 		  viewer.impl.toggleProgressive(true);	
-		  loadControllers(viewer.impl.sceneAfter);	  
+		  loadVRCursors(viewer.impl.sceneAfter);
+  			var g = new THREE.BoxGeometry( 1, 1, 1 );
+			var m = new THREE.MeshPhongMaterial( { color: 0x00FF00 });
+			viewer.impl.matman().addMaterial( 'd', m, true);
+			var cube = new THREE.Mesh( g, m );
+			//viewer.impl.sceneAfter.add( cube );
+  			cube.position.x = 10; cube.position.y = 10;
 		}
 	}

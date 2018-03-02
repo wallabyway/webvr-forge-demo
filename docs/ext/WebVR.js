@@ -27,7 +27,7 @@ Autodesk.Viewing.Extensions.WebVR.StereoRenderContext = function(_vrDisplay, cam
         _context = new avp.RenderContext();
         _renderer = renderer;
 
-        var dpr = 1;//window.devicePixelRatio;
+        var dpr = 1.0;//window.devicePixelRatio;
         _w = _vrDisplay.getEyeParameters("left").renderWidth * 2 / dpr;
         _h = _vrDisplay.getEyeParameters("right").renderHeight / dpr;
 
